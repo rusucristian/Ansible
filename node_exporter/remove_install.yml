@@ -1,0 +1,43 @@
+- name: Manage Node_Exporter
+  hosts: all
+#  become: true
+  gather_facts: no
+  tasks:
+
+    - name: Update System
+      become: True
+      apt:
+        update_cache: yes
+        upgrade: yes
+        autoclean: yes
+        autoremove: yes
+
+    - name: Stop container with node_exporter
+      command: "docker stop {{ item }}"
+      ignore_errors: True
+#      register: docker_error
+#      failed_when: "'Error' in docker_error.stderr"
+      with_items:
+        - node_exporter
+        - node-exporter
+
+    - name: Remove container with node_exporter
+      command: "docker rm {{ item }}"
+      ignore_errors: True
+      with_items:
+        - node_exporter
+        - node-exporter
+
+    - name: Stop and Disable node_exporter as a service
+      become: True
+      service:
+        name: node-exporter.service
+        state: stopped
+        enabled: no
+      ignore_errors: True
+
+    - name: Install node_exporter from Package manager
+      become: True
+      apt:
+        name: prometheus-node-exporter
+        state: present

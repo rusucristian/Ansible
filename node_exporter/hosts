@@ -1,0 +1,2 @@
+[srv]
+192.168.88.227 ansible_user=vm10admin ansible_ssh_pass=vm10admin 
